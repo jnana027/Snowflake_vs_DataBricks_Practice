@@ -1,0 +1,97 @@
+--Snowflake DDL & DML command
+CREATE OR REPLACE TABLE sales_data (
+    sale_id INT PRIMARY KEY,
+    region STRING NOT NULL,
+    product_category STRING NOT NULL,
+    product_name STRING NOT NULL,
+    quantity INT,
+    unit_price NUMBER(10,2),
+    discount NUMBER(5,2) DEFAULT 0,
+    sale_date DATE NOT NULL,
+    payment_mode STRING,
+    customer_type STRING
+);
+
+
+INSERT INTO sales_data VALUES
+(1,  'East',  'Electronics', 'Laptop', 5, 55000, 10, '2024-01-05', 'Credit Card', 'Regular'),
+(2,  'West',  'Furniture',   'Chair', 15, 1200, 0, '2024-01-05', 'Cash', 'New'),
+(3,  'North', 'Electronics', 'Mobile', 10, 20000, 5, '2024-01-06', 'Credit Card', 'Regular'),
+(4,  'South', 'Grocery',     'Rice', 100, 80, 0, '2024-01-07', 'UPI', 'Regular'),
+(5,  'East',  'Grocery',     'Oil', 50, 150, 5, '2024-01-07', 'Cash', 'New'),
+(6,  'North', 'Furniture',   'Table', 3, 7000, 10, '2024-01-08', 'Credit Card', 'Regular'),
+(7,  'West',  'Electronics', 'TV', 8, 40000, 20, '2024-01-08', 'UPI', 'Premium'),
+(8,  'South', 'Grocery',     'Wheat', 120, 60, 0, '2024-01-08', 'Cash', 'Regular'),
+(9,  'East',  'Furniture',   'Sofa', 2, 25000, 15, '2024-01-09', 'Credit Card', 'Premium'),
+(10, 'North', 'Electronics', 'Laptop', 6, 52000, 5, '2024-01-10', 'UPI', 'Premium'),
+(11, 'South', 'Furniture',   'Chair', 10, 1300, 0, '2024-01-10', 'Cash', 'New'),
+(12, 'West',  'Grocery',     'Sugar', 90, 50, 0, '2024-01-11', 'UPI', 'Regular'),
+(13, 'East',  'Electronics', 'Mobile', 15, 18000, 10, '2024-01-12', 'Credit Card', 'Regular'),
+(14, 'North', 'Grocery',     'Oil', 60, 140, 0, '2024-01-12', 'UPI', 'New'),
+(15, 'West',  'Furniture',   'Sofa', 5, 27000, 20, '2024-01-13', 'Credit Card', 'Premium'),
+(16, 'South', 'Electronics', 'Laptop', 3, 53000, 15, '2024-01-13', 'Cash', 'New'),
+(17, 'East',  'Grocery',     'Sugar', 80, 55, 0, '2024-01-14', 'UPI', 'Regular'),
+(18, 'North', 'Furniture',   'Chair', 7, 1100, 0, '2024-01-15', 'Credit Card', 'Regular'),
+(19, 'West',  'Electronics', 'Mobile', 12, 19000, 10, '2024-01-15', 'UPI', 'Premium'),
+(20, 'South', 'Grocery',     'Wheat', 150, 65, 5, '2024-01-16', 'Cash', 'New');
+
+select * from sales_data;
+
+SELECT GET_DDL('TABLE', 'sales_data');
+
+----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+--DataBricks DDL & DML command
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+
+spark = SparkSession.builder.appName("SalesData").getOrCreate()
+
+# ✅ Step 1: Make sale_date StringType
+schema = StructType([
+    StructField("sale_id", IntegerType(), False),
+    StructField("region", StringType(), False),
+    StructField("product_category", StringType(), False),
+    StructField("product_name", StringType(), False),
+    StructField("quantity", IntegerType(), True),
+    StructField("unit_price", DoubleType(), True),
+    StructField("discount", DoubleType(), True),
+    StructField("sale_date", StringType(), False),   # ← changed
+    StructField("payment_mode", StringType(), True),
+    StructField("customer_type", StringType(), True)
+])
+
+# Step 2: Create DataFrame
+data = [
+    (1, 'East', 'Electronics', 'Laptop', 5, 55000, 10, '2024-01-05', 'Credit Card', 'Regular'),
+    (2, 'West', 'Furniture', 'Chair', 15, 1200, 0, '2024-01-05', 'Cash', 'New'),
+    (3, 'North', 'Electronics', 'Mobile', 10, 20000, 5, '2024-01-06', 'Credit Card', 'Regular'),
+    (4, 'South', 'Grocery', 'Rice', 100, 80, 0, '2024-01-07', 'UPI', 'Regular'),
+    (5, 'East', 'Grocery', 'Oil', 50, 150, 5, '2024-01-07', 'Cash', 'New'),
+    (6, 'North', 'Furniture', 'Table', 3, 7000, 10, '2024-01-08', 'Credit Card', 'Regular'),
+    (7, 'West', 'Electronics', 'TV', 8, 40000, 20, '2024-01-08', 'UPI', 'Premium'),
+    (8, 'South', 'Grocery', 'Wheat', 120, 60, 0, '2024-01-08', 'Cash', 'Regular'),
+    (9, 'East', 'Furniture', 'Sofa', 2, 25000, 15, '2024-01-09', 'Credit Card', 'Premium'),
+    (10, 'North', 'Electronics', 'Laptop', 6, 52000, 5, '2024-01-10', 'UPI', 'Premium'),
+    (11, 'South', 'Furniture', 'Chair', 10, 1300, 0, '2024-01-10', 'Cash', 'New'),
+    (12, 'West', 'Grocery', 'Sugar', 90, 50, 0, '2024-01-11', 'UPI', 'Regular'),
+    (13, 'East', 'Electronics', 'Mobile', 15, 18000, 10, '2024-01-12', 'Credit Card', 'Regular'),
+    (14, 'North', 'Grocery', 'Oil', 60, 140, 0, '2024-01-12', 'UPI', 'New'),
+    (15, 'West', 'Furniture', 'Sofa', 5, 27000, 20, '2024-01-13', 'Credit Card', 'Premium'),
+    (16, 'South', 'Electronics', 'Laptop', 3, 53000, 15, '2024-01-13', 'Cash', 'New'),
+    (17, 'East', 'Grocery', 'Sugar', 80, 55, 0, '2024-01-14', 'UPI', 'Regular'),
+    (18, 'North', 'Furniture', 'Chair', 7, 1100, 0, '2024-01-15', 'Credit Card', 'Regular'),
+    (19, 'West', 'Electronics', 'Mobile', 12, 19000, 10, '2024-01-15', 'UPI', 'Premium'),
+    (20, 'South', 'Grocery', 'Wheat', 150, 65, 5, '2024-01-16', 'Cash', 'New')
+]
+
+sales_df = spark.createDataFrame(data, schema=schema)
+
+# ✅ Step 3: Convert to proper DateType
+sales_df = sales_df.withColumn("sale_date", to_date("sale_date", "yyyy-MM-dd"))
+
+# Display
+display(sales_df)
+
+
